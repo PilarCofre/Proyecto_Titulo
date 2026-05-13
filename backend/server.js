@@ -83,7 +83,7 @@ app.get("/api/deudas/:rut", async (req, res) => {
           SUM(v.SALDO_PENAL)         AS SALDO_PENAL,
           SUM(v.TOTAL_SALDO_CUOTAS)  AS TOTAL_SALDO_CUOTAS,
           SUM(v.DEUDA_CAPITAL + v.SALDO_PENAL + v.TOTAL_SALDO_CUOTAS) AS TOTAL_DEUDA_GENERAL
-       FROM V_SALDO_CUOTA v
+       FROM V_SALDO_CUOTA_1 v
        WHERE v.RUT_DEUDOR = :rut`,
       { rut: rutNum },
       { outFormat: oracledb.OUT_FORMAT_OBJECT }
@@ -104,9 +104,9 @@ app.get("/api/deudas/:rut", async (req, res) => {
           vr.MESES_MOROSOS,
           vr.SALDO_CAPITAL         AS VR_SALDO_CAPITAL,
           vr.SALDO_INTERESES_PENAL AS VR_SALDO_INTERESES
-       FROM V_SALDO_CUOTA v
+       FROM V_SALDO_CUOTA_1 v
        LEFT JOIN FSCU_DEUDAS d  ON d.CODIGO_DEUDA = v.CODIGO_DEUDA
-       LEFT JOIN V_PUEDE_REPROGRAMAR vr ON vr.CODIGO_DEUDA = v.CODIGO_DEUDA
+       LEFT JOIN V_PUEDE_REPROGRAMAR_1 vr ON vr.CODIGO_DEUDA = v.CODIGO_DEUDA
        WHERE v.RUT_DEUDOR = :rut
        ORDER BY v.AGNO`,
       { rut: rutNum },
