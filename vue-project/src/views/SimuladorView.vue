@@ -21,6 +21,27 @@ const enviando     = ref(false)
 const mensajeOk    = ref(false)
 const mensajeError = ref(null)
 
+// ── VALIDACIÓN TELÉFONO ──────────────────────
+const celularError = ref(null)
+
+function validarCelular(valor) {
+  const limpio = valor.replace(/\D/g, '')
+  if (!limpio) {
+    return false
+  }
+  if (!/^9\d{8}$/.test(limpio)) {
+    celularError.value = 'Ingrese un número válido (ej: 9 12345678 — 9 dígitos empezando con 9)'
+    return false
+  }
+  celularError.value = null
+  return true
+}
+
+function handleCelularInput(e) {
+  form.value.celular = e.target.value
+  validarCelular(e.target.value)
+}
+
 const idDireccion = ref(null)
 const idCelular   = ref(null)
 
@@ -113,6 +134,24 @@ const pieTotal    = computed(() =>
 )
 const pagoEsTotal = computed(() => pieMode.value === 'total')
 
+// ── VALIDACIÓN OTRO MONTO ────────────────────
+const otroMontoError = ref(null)
+
+const minPiePesos = computed(() => Math.round(minPie.value * datosDeuda.value.utm))
+
+function validarOtroMonto(pesos) {
+  if (!pesos || pesos <= 0) {
+    otroMontoError.value = 'Ingrese un monto'
+    return false
+  }
+  if (pesos < minPiePesos.value) {
+    otroMontoError.value = `El monto mínimo es ${fmtPesos(minPiePesos.value)} (${fmt(minPie.value)} UTM)`
+    return false
+  }
+  otroMontoError.value = null
+  return true
+}
+
 const pieAmount = computed(() => {
   if (pieMode.value === 'minimo') return minPie.value
   if (pieMode.value === '20utm')  return pie20utm.value
@@ -169,7 +208,16 @@ const utmFormateada = computed(() =>
   })
 )
 const anioActual  = new Date().getFullYear()
-const fechaLimite = computed(() => `30/04/${anioActual}`)
+
+// ── FECHA LÍMITE: último día del mes actual ──
+const fechaLimite = computed(() => {
+  const hoy = new Date()
+  const ultimoDia = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)
+  const dd  = String(ultimoDia.getDate()).padStart(2, '0')
+  const mm  = String(ultimoDia.getMonth() + 1).padStart(2, '0')
+  const aaaa = ultimoDia.getFullYear()
+  return `${dd}/${mm}/${aaaa}`
+})
 
 // ── FORMATO — igual que usuario.vue ──────────
 // Valores en UTM con 3 decimales
@@ -212,9 +260,12 @@ function handleOtroInput(e) {
   const raw = e.target.value.replace(/\D/g, '')
   otroMonto.value = raw
   e.target.value  = raw ? '$' + parseInt(raw).toLocaleString('es-CL') : ''
+  const pesos = parseInt(raw) || 0
+  validarOtroMonto(pesos)
 }
 
 async function actualizarDatos() {
+  if (!validarCelular(form.value.celular)) return
   guardando.value = true; mensajeOk.value = false; mensajeError.value = null
   try {
     const res = await fetch(`http://localhost:3000/api/persona/${auth.rut}`, {
@@ -313,7 +364,6 @@ function imprimirFormulario() {
         <td class="neg">−${fmt(condonacion.value)} UTM<br>
         <small>−${fmtPesos(utmAPesos(condonacion.value))}</small></td></tr>
     ${fila('Saldo intereses penales', saldoInt.value)}
-    ${fila('Saldo cuotas morosas (a reprogramar)', datosDeuda.value.cuotasMorosas)}
     ${fila('Total a reprogramar', totalReprogram.value, 'total-row')}
   `
 
@@ -449,8 +499,18 @@ function imprimirFormulario() {
                 <input v-model="form.region" /></div>
             </div>
             <div class="form-grid form-grid-2" style="padding-bottom:20px">
-              <div class="form-group"><label>Celular</label>
-                <input v-model="form.celular" /></div>
+              <!-- CELULAR CON VALIDACIÓN -->
+              <div class="form-group">
+                <label>Celular</label>
+                <input
+                  :value="form.celular"
+                  placeholder="9 12345678"
+                  maxlength="12"
+                  @input="handleCelularInput"
+                  :class="{ 'input-error': celularError }"
+                />
+                <span v-if="celularError" class="field-error">{{ celularError }}</span>
+              </div>
               <div class="form-group"><label>Correo electrónico</label>
                 <input v-model="form.email" /></div>
             </div>
@@ -524,7 +584,10 @@ function imprimirFormulario() {
               </div>
               <div class="otro-input-wrap" :class="{ visible: pieMode==='otro' }">
                 <input type="text" placeholder="$0" @input="handleOtroInput" />
-                <span class="hint">Ingrese el monto a pagar como pie en pesos</span>
+                <span class="hint">
+                  Ingrese el monto en pesos — mínimo {{ fmtPesos(minPiePesos) }} ({{ fmt(minPie) }} UTM)
+                </span>
+                <span v-if="otroMontoError" class="field-error">{{ otroMontoError }}</span>
               </div>
               <div class="pie-result">
                 <span class="lbl">Pie a pagar</span>
@@ -578,15 +641,6 @@ function imprimirFormulario() {
               </div>
             </div>
 
-            <div class="balance-section">
-              <div class="balance-section-title">Cuotas morosas</div>
-              <div class="balance-row">
-                <span class="lbl">Saldo total cuotas morosas</span>
-                <span class="val">{{ fmt(datosDeuda.cuotasMorosas) }} UTM
-                  <small class="val-sub">{{ fmtPesos(utmAPesos(datosDeuda.cuotasMorosas)) }}</small></span>
-              </div>
-            </div>
-
             <div v-if="pagoEsTotal" class="info-box blue" style="margin:0 0 12px">
               <strong>Sin pagaré:</strong> Al pagar el 100% del capital + 20% de los intereses
               penales (condonación del 80%), no se requiere firma de pagaré ante notario.
@@ -610,31 +664,55 @@ function imprimirFormulario() {
             </div>
           </div>
 
-          <!-- CUOTAS -->
-          <div class="box" v-if="!pagoEsTotal || datosDeuda.cuotasMorosas > 0">
-            <div class="box-header">Plan de cuotas — inicio cobro {{ anioActual + 1 }}</div>
-            <div class="slider-section">
-              <div class="slider-header">
-                <span class="lbl">Número de cuotas</span>
-                <span class="val">{{ nCuotas }} cuotas</span>
-              </div>
-              <input type="range" min="1" max="15" v-model.number="nCuotas"
-                :style="`background: linear-gradient(to right, var(--blue) ${sliderPct}%, var(--border) ${sliderPct}%)`" />
-              <div class="cuota-result">
-                <span class="lbl">Cuota anual estimada</span>
-                <span class="val">
-                  {{ fmt(cuotaAnual) }} UTM
-                  <small class="val-sub">{{ fmtPesos(utmAPesos(cuotaAnual)) }}</small>
-                </span>
-              </div>
-            </div>
-          </div>
+          <!-- CUOTAS — se oculta si es pago total sin cuotas morosas -->
+<div
+  class="box"
+  :class="{ disabledBox: pagoEsTotal }"
+>
+  <div class="box-header">
+    Plan de cuotas — inicio cobro {{ anioActual + 1 }}
+  </div>
 
-          <button class="print-btn" @click="imprimirFormulario">
-            ↓ &nbsp;Imprimir formulario con resumen de simulación y datos confirmados
-          </button>
+  <div
+    v-if="pagoEsTotal"
+    class="disabled-message"
+  >
+    Al seleccionar pago total, el plan de cuotas queda deshabilitado.
+  </div>
+
+  <div class="slider-section">
+    <div class="slider-header">
+      <span class="lbl">Número de cuotas</span>
+      <span class="val">{{ nCuotas }} cuotas</span>
+    </div>
+
+    <input
+      type="range"
+      min="1"
+      max="15"
+      v-model.number="nCuotas"
+      :disabled="pagoEsTotal"
+      :style="`background: linear-gradient(to right, var(--blue) ${sliderPct}%, var(--border) ${sliderPct}%)`"
+    />
+
+    <div class="cuota-result">
+      <span class="lbl">Cuota anual estimada</span>
+      <span class="val">
+        {{ fmt(cuotaAnual) }} UTM
+        <small class="val-sub">
+          {{ fmtPesos(utmAPesos(cuotaAnual)) }}
+        </small>
+      </span>
+    </div>
+  </div>
+</div>
+
+          <!-- BOTONES: primero CTA, luego imprimir -->
           <button class="cta-btn" @click="irAPaso('C')">
             Continuar a confirmar y enviar solicitud <span class="arrow">→</span>
+          </button>
+          <button class="print-btn" @click="imprimirFormulario">
+            ↓ &nbsp;Imprimir formulario con resumen de simulación y datos confirmados
           </button>
         </template>
       </div>
@@ -802,4 +880,3 @@ function imprimirFormulario() {
   </div>
 </Teleport>
 </template>
-

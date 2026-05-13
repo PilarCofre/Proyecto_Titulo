@@ -548,3 +548,16 @@ input[type=range]::-webkit-slider-thumb {
   transition: opacity 0.15s;
 }
 .modal-btn:hover { opacity: 0.85; }
+
+.disabledBox {
+  opacity: 0.6;
+}
+
+.disabled-message {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f3f4f6;
+  color: #6b7280;
+  font-size: 14px;
+}

@@ -29,6 +29,16 @@ async function cargarSolicitud() {
 
 onMounted(cargarSolicitud)
 
+// ── FECHA LÍMITE: último día del mes actual ──
+const fechaLimite = computed(() => {
+  const hoy = new Date()
+  const ultimoDia = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)
+  const dd  = String(ultimoDia.getDate()).padStart(2, '0')
+  const mm  = String(ultimoDia.getMonth() + 1).padStart(2, '0')
+  const aaaa = ultimoDia.getFullYear()
+  return `${dd}/${mm}/${aaaa}`
+})
+
 // ── HISTORIAL DINÁMICO ────────────────────────
 const historial = computed(() => {
   if (!solicitud.value) return []
@@ -179,7 +189,7 @@ function fmt(n) {
         <!-- Aviso plazo (solo pendiente o aprobada, no activada) -->
         <div v-if="['PENDIENTE','APROBADA'].includes(solicitud.estado)" class="info-box yellow">
           Debe completar el pago del pie y la firma del pagaré antes del
-          <strong>{{ solicitud.fechaLimite }}</strong>.
+          <strong>{{ fechaLimite }}</strong>.
           Si no lo hace, la solicitud será rechazada automáticamente.
         </div>
 
@@ -235,7 +245,7 @@ function fmt(n) {
             </div>
             <div class="resumen-row">
               <span class="lbl">Fecha límite proceso</span>
-              <span class="val">{{ solicitud.fechaLimite }}</span>
+              <span class="val">{{ fechaLimite }}</span>
             </div>
             <div class="resumen-row last">
               <span class="lbl">Enviada a</span>
