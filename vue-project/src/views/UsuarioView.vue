@@ -89,23 +89,23 @@ const totalDeudaGeneral = computed(() => {
       <template v-else>
 
         <!-- DEUDA_CAPITAL = cuotas vencidas (≤ año actual)           -->
-        <!-- SALDO_PENAL   = intereses penales acumulados              -->
+        <!-- SALDO_PENAL   = intereses penales acumulados  - ab            -->
         <!-- TOTAL_SALDO_CUOTAS = cuotas futuras (> año actual)       -->
         <div class="summary-cards">
           <div class="card">
-            <div class="card-label">Capital adeudado</div>
+            <div class="card-label">Capital Adeudado</div>
             <div class="card-value">{{ fmt(resumen.DEUDA_CAPITAL) }}</div>
           </div>
           <div class="card">
-            <div class="card-label">Intereses penales</div>
+            <div class="card-label">Intereses Penales</div>
             <div class="card-value red">{{ fmt(resumen.SALDO_PENAL) }}</div>
           </div>
           <div class="card">
-            <div class="card-label">Cuotas futuras</div>
+            <div class="card-label">Cuotas Futuras</div>
             <div class="card-value">{{ fmt(resumen.TOTAL_SALDO_CUOTAS) }}</div>
           </div>
           <div class="card">
-            <div class="card-label">Total deuda</div>
+            <div class="card-label">Total Deuda</div>
             <div class="card-value bold">{{ fmt(resumen.TOTAL_DEUDA_GENERAL ?? totalDeudaGeneral) }}</div>
           </div>
         </div>
@@ -122,22 +122,22 @@ const totalDeudaGeneral = computed(() => {
             <span class="detail-value">{{ det.AGNO_DEUDA_EXIGIBLE ?? '—' }}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">N° cuotas originales</span>
+            <span class="detail-label">N° Cuotas Deuda</span>
             <span class="detail-value">
               {{ det.NRO_CUOTAS != null ? det.NRO_CUOTAS + ' anuales' : '—' }}
             </span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">Meses en mora</span>
+            <span class="detail-label">Cant. de Meses de Morosidad</span>
             <span class="detail-value">{{ det.MESES_MOROSOS ?? '—' }}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">Estado</span>
+            <span class="detail-label">Estado Deuda</span>
             <span v-if="esMoroso" class="badge moroso">Moroso</span>
             <span v-else          class="badge cumple">Al día</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">Elegible reprogramación</span>
+            <span class="detail-label">Elegible Reprogramación</span>
             <span v-if="puedeReprogramar" class="badge cumple">Sí, cumple requisitos</span>
             <span v-else                  class="badge moroso">No cumple requisitos</span>
           </div>

@@ -130,7 +130,7 @@ function logout() {
 .user-info .role  { color: var(--text-muted); font-size: 12px; }
 .divider-dot      { color: var(--border); }
 
-/* ── LOGOUT BTN ──────────────────────────────── */
+/* ── LOGOUT BTN  CERRAR SESIÓN──────────────────────────────── */
 .logout-btn {
   display: flex;
   align-items: center;

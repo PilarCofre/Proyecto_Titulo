@@ -29,7 +29,7 @@ async function login() {
     })
     router.push(data.tipo === "admin" ? "/admin" : "/usuario")
   } else {
-    alert("Usuario no encontrado")
+    alert("Usuario no encontrado o contraseña incorrecta")
   }
 }
 </script>
@@ -37,7 +37,7 @@ async function login() {
 <template>
   <div class="login-container">
     <h2>Login</h2>
-    <input v-model="rut"      placeholder="Ingrese RUT" />
+    <input v-model="rut"      placeholder="Ingrese RUT sin Dv" />
     <input v-model="password" type="password" placeholder="Ingrese clave" />
     <button @click="login">Ingresar</button>
   </div>
