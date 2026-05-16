@@ -97,6 +97,7 @@ function verDetalle(id) { router.push(`/admin/solicitud/${id}`) }
               <th>Nombre</th>
               <th>Total deuda</th>
               <th>Pie</th>
+              <th>F. solicitud</th>
               <th>F. límite</th>
               <th>Estado</th>
               <th>Acción</th>
@@ -109,6 +110,7 @@ function verDetalle(id) { router.push(`/admin/solicitud/${id}`) }
               <td>{{ s.nombre }}</td>
               <td class="mono">{{ fmt(s.totalDeuda) }}</td>
               <td class="mono">{{ fmt(s.pie) }}</td>
+              <td class="mono">{{ s.fechaEnvio }}</td> 
               <td class="mono">{{ fechaLimite }}</td>
              
               <td>

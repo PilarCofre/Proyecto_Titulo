@@ -566,17 +566,17 @@ function imprimirFormulario() {
                 <button class="pie-btn" :class="{ selected: pieMode==='minimo' }" @click="pieMode='minimo'">
                   Mínimo<br>
                   <small>{{ fmt(minPie) }} UTM</small>
-                  <small>{{ fmtPesos(utmAPesos(minPie)) }}</small>
+                  <small style="margin-left:10px;">{{ fmtPesos(utmAPesos(minPie)) }}</small>
                 </button>
                 <button class="pie-btn" :class="{ selected: pieMode==='20utm' }" @click="pieMode='20utm'">
                   20 UTM<br>
                   <small>20,000 UTM</small>
-                  <small>{{ fmtPesos(utmAPesos(20)) }}</small>
+                  <small style="margin-left:10px;">{{ fmtPesos(utmAPesos(20)) }}</small>
                 </button>
                 <button class="pie-btn" :class="{ selected: pieMode==='total' }" @click="pieMode='total'">
                   Pago total<br>
                   <small>{{ fmt(pieTotal) }} UTM</small>
-                  <small>{{ fmtPesos(utmAPesos(pieTotal)) }}</small>
+                  <small style="margin-left:10px;">{{ fmtPesos(utmAPesos(pieTotal)) }}</small>
                 </button>
                 <button class="pie-btn" :class="{ selected: pieMode==='otro' }" @click="pieMode='otro'">
                   Otro monto
@@ -827,10 +827,10 @@ function imprimirFormulario() {
           </ul>
         </div>
         <div v-else class="info-box blue">
-          Una vez aceptada su solicitud recibirá en su correo electrónico:
+          Una vez APROBADA su solicitud recibirá en su correo electrónico:
           <ul>
-            <li>El pagaré de reprogramación para firmar ante notario</li>
-            <li>Las instrucciones para realizar el pago del pie inicial</li>
+            <li>Instrucciones para descargar Pagare desde Mis Documentos</li>
+            <li>Instrucciones para realizar el pago del pie inicial</li>
           </ul>
         </div>
 

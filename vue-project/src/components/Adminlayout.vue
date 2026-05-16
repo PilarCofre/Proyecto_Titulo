@@ -104,6 +104,16 @@ function logout() {
   gap: 12px;
 }
 
+.user-info{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+.name{
+  word-spacing: 5px;
+}
+
 .brand {
   font-weight: 600;
   font-size: 14px;

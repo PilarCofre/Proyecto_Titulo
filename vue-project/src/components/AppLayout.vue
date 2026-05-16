@@ -102,6 +102,22 @@ function logout() {
   max-height: none !important;
   gap: 12px;
 }
+.user-info{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  font-weight: 700;
+  
+}
+
+.user-info .name{
+  color: #000 !important;
+  font-weight: bold !important;
+  font-size: 12px !important;
+}
+
+
 
 .brand {
   font-weight: 600;

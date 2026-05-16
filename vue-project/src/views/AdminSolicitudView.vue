@@ -34,6 +34,18 @@ async function cargarSolicitud() {
 }
 
 onMounted(cargarSolicitud)
+// ── FECHA LÍMITE: último día del mes actual ──
+const fechaLimite = computed(() => {
+  const hoy = new Date()
+  const ultimoDia = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0)
+  const dd  = String(ultimoDia.getDate()).padStart(2, '0')
+  const mm  = String(ultimoDia.getMonth() + 1).padStart(2, '0')
+  const aaaa = ultimoDia.getFullYear()
+  return `${dd}/${mm}/${aaaa}`
+})
+
+
+
 
 function fmt(n) {
   if (n == null) return '—'
@@ -174,7 +186,7 @@ const modalConfig = computed(() => {
               <div class="detail-row"><span class="detail-label">Total a reprogramar</span><span class="detail-value mono blue bold">{{ fmt(solicitud.saldoReprogramar) }}</span></div>
               <div class="detail-row"><span class="detail-label">Plan de pago</span><span class="detail-value">{{ solicitud.plazoAnios }} cuotas anuales</span></div>
               <div class="detail-row"><span class="detail-label">Cuota anual estimada</span><span class="detail-value mono">{{ fmt(solicitud.cuotaAnual) }}</span></div>
-              <div class="detail-row"><span class="detail-label">Fecha límite</span><span class="detail-value">{{ solicitud.fechaLimite }}</span></div>
+              <div class="detail-row"><span class="detail-label">Fecha límite</span><span class="detail-value">{{ fechaLimite }}</span></div>
             </div>
 
           </div>
@@ -218,7 +230,7 @@ const modalConfig = computed(() => {
 
             <!-- Info plazo cuando está pendiente -->
             <div v-if="esPendiente" class="info-aviso">
-              <strong>Fecha límite:</strong> {{ solicitud.fechaLimite }}<br>
+              <strong>Fecha límite:</strong> {{ fechaLimite }}<br>
               El deudor debe pagar el pie y firmar el pagaré antes de esta fecha.
               Si aprueba la solicitud, se le notificará automáticamente al deudor.
             </div>
